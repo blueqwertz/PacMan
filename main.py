@@ -1,7 +1,6 @@
 import pygame
 import os
 
-from render import RenderEngine
 from game import PacMan
 
 pygame.init()

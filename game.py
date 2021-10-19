@@ -2,6 +2,7 @@ import pygame
 
 from player import Player
 from enemy import Enemy
+from render import RenderEngine
 
 class PacMan(object):
     def __init__(self, win):
@@ -18,6 +19,8 @@ class PacMan(object):
         
         self.player_speed = 1
         self.player = Player(self.player_speed)
+        
+        self.renderer = RenderEngine(win, self)
     
     def keys(self):
         for event in pygame.event.get():
