@@ -1,4 +1,7 @@
+import math
+from os import remove
 import pygame
+from pygame.sprite import Sprite
 
 from player import Player
 from enemy import Enemy
@@ -18,15 +21,16 @@ class PacMan(object):
         self.frame_rate = 60
         
         self.enemies = []
-        
-        self.keys_pressed = [False, False, False, False]
+
+        self.look_up_list = [0, 1, 2, 3]
         
         self.size = [x_size, y_size]
         self.grid = self.load_map()
         self.block_size = tyle_size
-        
+                
         self.player_speed = 11
-        self.player = Player(self.player_speed)
+
+        self.player = Player(self.player_speed, self)
         
         self.renderer = RenderEngine(win, self, tyle_size, x_size, y_size)
     
@@ -62,40 +66,38 @@ class PacMan(object):
             if event.type == pygame.QUIT:
                 self.run = False
                 pygame.quit()
+                return
             
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    self.keys_pressed[0] = True
-                if event.key == pygame.K_UP:
-                    self.keys_pressed[1] = True
-                if event.key == pygame.K_RIGHT:
-                    self.keys_pressed[2] = True
-                if event.key == pygame.K_DOWN:
-                    self.keys_pressed[3] = True
-                    
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT:
-                    self.keys_pressed[0] = False
-                if event.key == pygame.K_UP:
-                    self.keys_pressed[1] = False
-                if event.key == pygame.K_RIGHT:
-                    self.keys_pressed[2] = False
-                if event.key == pygame.K_DOWN:
-                    self.keys_pressed[3] = False
+                movementKeys = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
+                
+                for i, key in enumerate(movementKeys):
+                    if event.key == key:
+                        self.look_up_list.insert(0, self.look_up_list.pop(self.look_up_list.index(i)))
     
+    def removeAllKeyPressed(self):
+        for i in range(len(self.keys_pressed)):
+            self.keys_pressed[i] = False
     
     def render(self):
         self.renderer.new_screen()
         self.renderer.draw_background()
-        self.renderer.draw_grid_lines()
+        # self.renderer.draw_grid_lines()
         self.renderer.render_grid(self.grid)
         self.renderer.draw_player()
             
     def frame(self):
-        delta = self.clock.get_rawtime()
-        for i, key in enumerate(self.keys_pressed):
-            if key:
-                self.player.send_key(i, delta)
+        delta = self.clock.get_rawtime() / 1000
+        
+        self.player.update_movement_possible()
+        
+        directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]
+        for i in self.look_up_list:
+            if self.player.movementPossible[i]:
+                pos = directions[i]
+                self.player.move(x=pos[0] * delta * self.player_speed, y=pos[1] * delta * self.player_speed)
+                break
+        
         
         self.clock.tick(self.frame_rate)
         
