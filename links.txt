@@ -1,0 +1,4 @@
+https://gameinternals.com/understanding-pac-man-ghost-behavior
+https://www.101computing.net/pacman-ghost-algorithm/
+https://github.com/Sadzeih/Arcade
+https://phaser.io/tutorials/coding-tips-005
