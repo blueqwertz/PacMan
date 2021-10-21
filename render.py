@@ -8,8 +8,6 @@ class RenderEngine(object):
         self.screen_size_y = y_size
         self.block_size = block_size
         
-        self.sprites = [pygame.image.load("img/0.png"), pygame.image.load("img/1.png"), pygame.image.load("img/2.png"), pygame.image.load("img/3.png")]
-        
         self.bg = pygame.transform.scale(pygame.image.load("bg.png"), (self.screen_size_x * self.block_size, self.screen_size_y * self.block_size))
         
     def new_screen(self):
@@ -22,8 +20,28 @@ class RenderEngine(object):
             pygame.draw.line(self.win, (128, 128, 128), (0, j * self.block_size), (self.block_size * self.screen_size_x, j * self.block_size))
     
     def draw_player(self):
-        img = self.sprites[self.player.rotation]
-        img = pygame.transform.scale(img, (self.block_size * 2, self.block_size * 2))
+        ElementPath = "img/Assets/"
+        if self.player.direction == 2:
+            if self.player.mouthOpen:
+                pacmanImage = pygame.image.load(ElementPath + "tile049.png")
+            else:
+                pacmanImage = pygame.image.load(ElementPath + "tile051.png")
+        elif self.player.direction == 1:
+            if self.player.mouthOpen:
+                pacmanImage = pygame.image.load(ElementPath + "tile052.png")
+            else:
+                pacmanImage = pygame.image.load(ElementPath + "tile054.png")
+        elif self.player.direction == 3:
+            if self.player.mouthOpen:
+                pacmanImage = pygame.image.load(ElementPath + "tile053.png")
+            else:
+                pacmanImage = pygame.image.load(ElementPath + "tile055.png")
+        elif self.player.direction == 0:
+            if self.player.mouthOpen:
+                pacmanImage = pygame.image.load(ElementPath + "tile048.png")
+            else:
+                pacmanImage = pygame.image.load(ElementPath + "tile050.png")
+        img = pygame.transform.scale(pacmanImage, (self.block_size * 2, self.block_size * 2))
         
         self.win.blit(img, (self.player.x * self.block_size - img.get_width() / 4, self.player.y * self.block_size - img.get_height() / 4))
         

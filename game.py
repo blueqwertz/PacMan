@@ -16,13 +16,14 @@ class PacMan(object):
         
         self.pause = False
         
-        self.coins = []
+        self.score = 0
         
+        self.time_last_move = 0
         self.frame_rate = 60
         
         self.enemies = []
 
-        self.look_up_list = [0, 1, 2, 3]
+        self.animation_steps = 4
         
         self.size = [x_size, y_size]
         self.grid = self.load_map()
@@ -30,7 +31,7 @@ class PacMan(object):
                 
         self.player_speed = 11
 
-        self.player = Player(self.player_speed, self)
+        self.player = Player(self)
         
         self.renderer = RenderEngine(win, self, tyle_size, x_size, y_size)
     
@@ -70,10 +71,17 @@ class PacMan(object):
             
             if event.type == pygame.KEYDOWN:
                 movementKeys = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
-                
+
                 for i, key in enumerate(movementKeys):
                     if event.key == key:
-                        self.look_up_list.insert(0, self.look_up_list.pop(self.look_up_list.index(i)))
+                        self.player.new_dir = i
+    
+    def check_coin_collide(self):
+        pos = (self.player.x, self.player.y)
+        if round(pos[0]) == pos[0] and round(pos[1]) == pos[1]:
+            if self.grid[int(pos[1])][int(pos[0])].type == "coin":
+                self.grid[int(pos[1])][int(pos[0])] = Tyle("empty")
+                self.score += 10
     
     def removeAllKeyPressed(self):
         for i in range(len(self.keys_pressed)):
@@ -88,16 +96,13 @@ class PacMan(object):
             
     def frame(self):
         delta = self.clock.get_rawtime() / 1000
+        self.time_last_move += delta
         
-        self.player.update_movement_possible()
+        if self.time_last_move >= 1 / self.player_speed * self.player.speed:
+            self.player.move()
+            self.time_last_move = 0
         
-        directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]
-        for i in self.look_up_list:
-            if self.player.movementPossible[i]:
-                pos = directions[i]
-                self.player.move(x=pos[0] * delta * self.player_speed, y=pos[1] * delta * self.player_speed)
-                break
-        
+        self.check_coin_collide()
         
         self.clock.tick(self.frame_rate)
         
