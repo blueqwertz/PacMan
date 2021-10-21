@@ -1,4 +1,6 @@
 import pygame
+import string
+
 class RenderEngine(object):
     def __init__(self, win, game, block_size, x_size, y_size):
         self.win = win
@@ -7,6 +9,13 @@ class RenderEngine(object):
         self.screen_size_x = x_size
         self.screen_size_y = y_size
         self.block_size = block_size
+        
+        self.BoardImgPath = "Assets/BoardImages/"
+        self.DataPath = "Assets/Data/"
+        self.ElementPath = "Assets/ElementImages/"
+        self.MusicPath = "Assets/Music/"
+        self.TextPath = "Assets/TextImages/"
+        
         
         self.bg = pygame.transform.scale(pygame.image.load("bg.png"), (self.screen_size_x * self.block_size, self.screen_size_y * self.block_size))
         
@@ -20,27 +29,30 @@ class RenderEngine(object):
             pygame.draw.line(self.win, (128, 128, 128), (0, j * self.block_size), (self.block_size * self.screen_size_x, j * self.block_size))
     
     def draw_player(self):
-        ElementPath = "img/Assets/"
-        if self.player.direction == 2:
-            if self.player.mouthOpen:
-                pacmanImage = pygame.image.load(ElementPath + "tile049.png")
-            else:
-                pacmanImage = pygame.image.load(ElementPath + "tile051.png")
-        elif self.player.direction == 1:
-            if self.player.mouthOpen:
-                pacmanImage = pygame.image.load(ElementPath + "tile052.png")
-            else:
-                pacmanImage = pygame.image.load(ElementPath + "tile054.png")
-        elif self.player.direction == 3:
-            if self.player.mouthOpen:
-                pacmanImage = pygame.image.load(ElementPath + "tile053.png")
-            else:
-                pacmanImage = pygame.image.load(ElementPath + "tile055.png")
-        elif self.player.direction == 0:
-            if self.player.mouthOpen:
-                pacmanImage = pygame.image.load(ElementPath + "tile048.png")
-            else:
-                pacmanImage = pygame.image.load(ElementPath + "tile050.png")
+        
+        mouthOpen = self.player.mouthOpen
+        rotation = self.player.direction
+        
+        if mouthOpen == 0:
+            if rotation == 2:
+                pacmanImage = pygame.image.load(self.ElementPath + "tile049.png")
+            elif rotation == 1:
+                pacmanImage = pygame.image.load(self.ElementPath + "tile052.png")
+            elif rotation == 3:
+                pacmanImage = pygame.image.load(self.ElementPath + "tile053.png")
+            elif rotation == 0:
+                pacmanImage = pygame.image.load(self.ElementPath + "tile048.png")
+        elif mouthOpen == 1:
+            if rotation == 2:
+                pacmanImage = pygame.image.load(self.ElementPath + "tile051.png")
+            elif rotation == 1:
+                pacmanImage = pygame.image.load(self.ElementPath + "tile054.png")
+            elif rotation == 3:
+                 pacmanImage = pygame.image.load(self.ElementPath + "tile055.png")
+            elif rotation == 0:
+                pacmanImage = pygame.image.load(self.ElementPath + "tile050.png")
+        else:
+            pacmanImage = pygame.image.load(self.ElementPath + "tile112.png")
         img = pygame.transform.scale(pacmanImage, (self.block_size * 2, self.block_size * 2))
         
         self.win.blit(img, (self.player.x * self.block_size - img.get_width() / 4, self.player.y * self.block_size - img.get_height() / 4))
@@ -55,6 +67,36 @@ class RenderEngine(object):
                 if tyle.type == None:
                     continue
                 if tyle.type == "coin":
-                    pygame.draw.circle(self.win, tyle.color, (j * self.block_size + self.block_size // 2, i * self.block_size + self.block_size // 2), self.block_size // 8)
+                    pygame.draw.circle(self.win, tyle.color, (j * self.block_size + self.block_size // 2, i * self.block_size + self.block_size // 2), self.block_size // 5)
                 elif tyle.type == "dot":
-                    pygame.draw.circle(self.win, tyle.color, (j * self.block_size + self.block_size // 2, i * self.block_size + self.block_size // 2), self.block_size // 4)
+                    if not self.game.showDot:
+                        continue
+                    pygame.draw.circle(self.win, tyle.color, (j * self.block_size + self.block_size // 2, i * self.block_size + self.block_size // 2), self.block_size // 2)
+    
+    def draw_grame_info(self):
+        self.text("ZZZZZZZZ", "yellow", (30, 10))
+        for i in range(self.game.lives):
+            
+            img = pygame.transform.scale(pygame.image.load(self.ElementPath + "tile052.png"), (self.block_size, self.block_size))
+            self.win.blit(img, (i * img.get_width() + 20, (self.game.size[1] - 1.5) * self.block_size))
+    
+    def text(self, text, color:str, pos) -> None:
+        text = str(text.lower())
+        color = color.lower()
+        
+        if not color in ["white", "red", "pink", "blue", "yellow"]:
+            raise NameError("color not supported")
+    
+        for i, letter in enumerate(text):
+            if letter == " ":
+                continue
+            letterInd = ord(letter) - 97
+            if letterInd >= 15:
+                letterInd += 1
+            index = "{:03d}".format(letterInd + (64 * ["white", "red", "pink", "blue", "yellow"].index(color)))
+            letterImg = pygame.image.load(self.TextPath + f"tile{index}.png")
+            img = pygame.transform.scale(letterImg, (self.block_size, self.block_size))
+            self.win.blit(img, (pos[0] + i * img.get_width(), pos[1]))
+            
+        
+        

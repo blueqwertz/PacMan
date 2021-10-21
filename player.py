@@ -12,8 +12,8 @@ class Player(object):
         
         self.game = game
         
-        self.mouthOpen = True
-        self.mouthChangeDelay = 2
+        self.mouthOpen = 0
+        self.mouthChangeDelay = 5
         self.mouthChangeCount = 0
                 
         self.animation_step = 0
@@ -35,7 +35,7 @@ class Player(object):
         
         if self.mouthChangeCount >= self.mouthChangeDelay:
             self.mouthChangeCount = 0
-            self.mouthOpen = not self.mouthOpen
+            self.mouthOpen = (self.mouthOpen + 1) % 3
         
         self.mouthChangeCount += 1
              

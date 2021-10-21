@@ -1,7 +1,4 @@
-import math
-from os import remove
 import pygame
-from pygame.sprite import Sprite
 
 from player import Player
 from enemy import Enemy
@@ -28,8 +25,15 @@ class PacMan(object):
         self.size = [x_size, y_size]
         self.grid = self.load_map()
         self.block_size = tyle_size
-                
-        self.player_speed = 11
+        
+        self.showDot = True
+        self.showDotCount = 0
+        self.showDotDelay = 20
+        
+        self.lives = 3
+        
+        self.player_speed = 20
+        self.ghosts_frightened = False
 
         self.player = Player(self)
         
@@ -82,6 +86,10 @@ class PacMan(object):
             if self.grid[int(pos[1])][int(pos[0])].type == "coin":
                 self.grid[int(pos[1])][int(pos[0])] = Tyle("empty")
                 self.score += 10
+            
+            if self.grid[int(pos[1])][int(pos[0])].type == "dot":
+                self.grid[int(pos[1])][int(pos[0])] = Tyle("empty")
+                self.ghosts_frightened = True
     
     def removeAllKeyPressed(self):
         for i in range(len(self.keys_pressed)):
@@ -93,10 +101,18 @@ class PacMan(object):
         # self.renderer.draw_grid_lines()
         self.renderer.render_grid(self.grid)
         self.renderer.draw_player()
+        self.renderer.draw_grame_info()
             
     def frame(self):
         delta = self.clock.get_rawtime() / 1000
+        
         self.time_last_move += delta
+        
+        self.showDotCount += 1
+        
+        if self.showDotCount >= self.showDotDelay:
+            self.showDotCount = 0
+            self.showDot = not self.showDot
         
         if self.time_last_move >= 1 / self.player_speed * self.player.speed:
             self.player.move()
@@ -113,6 +129,6 @@ class PacMan(object):
 
 class Tyle(object):
     def __init__(self, tyle_type):
-        self.colors = {"border": (0, 0, 255), "coin": (255, 0, 0), "empty": (0, 0, 0), "dot": (255, 0, 0)}
+        self.colors = {"border": (0, 0, 255), "coin": (242, 168, 132), "empty": (0, 0, 0), "dot": (242, 168, 132)}
         self.type = tyle_type
         self.color = self.colors[tyle_type]

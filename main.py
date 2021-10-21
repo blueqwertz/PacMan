@@ -27,10 +27,13 @@ pygame.display.set_caption("PacMan")
 def run(win):
     Game = PacMan(win, tiles_w, tiles_h, tile_size)
 
-    while Game.run:
-        Game.frame()
-        Game.render()
-        Game.update()
-        Game.keys()
+    try:
+        while Game.run:
+            Game.frame()
+            Game.render()
+            Game.update()
+            Game.keys()
+    except KeyboardInterrupt:
+        print("byebye")
 
 run(win)
