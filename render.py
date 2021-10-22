@@ -10,15 +10,8 @@ class RenderEngine(object):
         self.screen_size_y = y_size
         self.block_size = block_size
         
-        self.BoardImgPath = "Assets/BoardImages/"
-        self.DataPath = "Assets/Data/"
-        self.ElementPath = "Assets/ElementImages/"
-        self.MusicPath = "Assets/Music/"
-        self.TextPath = "Assets/TextImages/"
-        
-        
-        self.bg = pygame.transform.scale(pygame.image.load("bg.png"), (self.screen_size_x * self.block_size, self.screen_size_y * self.block_size))
-        
+        self.SpriteLoader = SpriteLoader()
+                
     def new_screen(self):
         self.win.fill((0, 0, 0))
         
