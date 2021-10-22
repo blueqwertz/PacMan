@@ -82,14 +82,17 @@ class PacMan(object):
     
     def check_coin_collide(self):
         pos = (self.player.x, self.player.y)
-        if round(pos[0]) == pos[0] and round(pos[1]) == pos[1]:
-            if self.grid[int(pos[1])][int(pos[0])].type == "coin":
-                self.grid[int(pos[1])][int(pos[0])] = Tyle("empty")
-                self.score += 10
-            
-            if self.grid[int(pos[1])][int(pos[0])].type == "dot":
-                self.grid[int(pos[1])][int(pos[0])] = Tyle("empty")
-                self.ghosts_frightened = True
+        try:
+            if round(pos[0]) == pos[0] and round(pos[1]) == pos[1]:
+                if self.grid[int(pos[1])][int(pos[0])].type == "coin":
+                    self.grid[int(pos[1])][int(pos[0])] = Tyle("empty")
+                    self.score += 10
+                
+                if self.grid[int(pos[1])][int(pos[0])].type == "dot":
+                    self.grid[int(pos[1])][int(pos[0])] = Tyle("empty")
+                    self.ghosts_frightened = True
+        except:
+            pass
     
     def removeAllKeyPressed(self):
         for i in range(len(self.keys_pressed)):
