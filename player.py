@@ -13,7 +13,7 @@ class Player(object):
         self.game = game
         
         self.mouthOpen = 0
-        self.mouthChangeDelay = 5
+        self.mouthChangeDelay = 3
         self.mouthChangeCount = 0
                 
         self.animation_step = 0

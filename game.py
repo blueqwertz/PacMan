@@ -32,7 +32,7 @@ class PacMan(object):
         
         self.lives = 3
         
-        self.player_speed = 20
+        self.player_speed = 11
         self.ghosts_frightened = False
 
         self.player = Player(self)

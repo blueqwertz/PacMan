@@ -74,7 +74,7 @@ class RenderEngine(object):
                     pygame.draw.circle(self.win, tyle.color, (j * self.block_size + self.block_size // 2, i * self.block_size + self.block_size // 2), self.block_size // 2)
     
     def draw_grame_info(self):
-        self.text("ZZZZZZZZ", "yellow", (30, 10))
+        self.text("HIGH SCORE", "white", (190, 5))
         for i in range(self.game.lives):
             
             img = pygame.transform.scale(pygame.image.load(self.ElementPath + "tile052.png"), (self.block_size, self.block_size))
