@@ -1,20 +1,20 @@
 import math
 
 import pygame
-from pygame.constants import GL_FRAMEBUFFER_SRGB_CAPABLE
 
 
 class Player(object):
     def __init__(self, game):
         self.x = 14
         self.y = 26
-        self.speed = 0.25
+        self.speed = 1/4
         
         self.game = game
         
         self.mouthOpen = 0
         self.mouthChangeDelay = 3
         self.mouthChangeCount = 0
+        self.mouthOpenDir = True
                 
         self.animation_step = 0
         self.animation_index = 1
@@ -31,13 +31,19 @@ class Player(object):
             return False
         return True
     
-    def move(self):
-        
+    def update_anim(self):
+        self.mouthChangeCount += 1
         if self.mouthChangeCount >= self.mouthChangeDelay:
             self.mouthChangeCount = 0
-            self.mouthOpen = (self.mouthOpen + 1) % 3
-        
-        self.mouthChangeCount += 1
+            if self.mouthOpenDir:
+                self.mouthOpen += 1
+            else:
+                self.mouthOpen -= 1
+            
+            if self.mouthOpen <= 0 or self.mouthOpen >= 3:
+                self.mouthOpenDir = not self.mouthOpenDir
+    
+    def move(self):
              
         if self.x < 0:
             self.x = self.game.size[0]

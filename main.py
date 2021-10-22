@@ -1,5 +1,10 @@
 import pygame
-import os
+from os import system, name, environ
+
+if name == 'nt':
+        _ = system('cls')
+else:
+    _ = system('clear')
 
 from game import PacMan
 
@@ -13,9 +18,9 @@ screen_w = tiles_w * tile_size
 screen_h = tiles_h * tile_size
 
 
-windowX = 100
-windowY = 100
-os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (windowX,windowY)
+windowX = 0
+windowY = 30
+environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (windowX,windowY)
 
 pygame.init()
 pygame.joystick.init()

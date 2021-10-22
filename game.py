@@ -18,12 +18,15 @@ class PacMan(object):
         self.time_last_move = 0
         self.frame_rate = 60
         
-        self.enemies = []
 
         self.animation_steps = 4
         
+        self.enemies = []
+        
         self.size = [x_size, y_size]
+        
         self.grid = self.load_map()
+        
         self.block_size = tyle_size
         
         self.showDot = True
@@ -38,6 +41,29 @@ class PacMan(object):
         self.player = Player(self)
         
         self.renderer = RenderEngine(win, self, tyle_size, x_size, y_size)
+    
+    def frame(self):
+        delta = self.clock.get_rawtime() / 1000
+                
+        self.time_last_move += delta
+        
+        self.showDotCount += 1
+        
+        if self.showDotCount >= self.showDotDelay:
+            self.showDotCount = 0
+            self.showDot = not self.showDot
+        if self.time_last_move >= (1 / self.player_speed) * self.player.speed:
+            self.player.move()
+            self.time_last_move %= (1 / self.player_speed) * self.player.speed
+        
+        self.player.update_anim()
+        self.check_coin_collide()
+        
+        self.clock.tick(self.frame_rate)
+    
+    def init_joystick(self):
+        self.joystick = pygame.joystick.Joystick(0)
+        self.joystick.init()
     
     def load_map(self):
         temp = []
@@ -101,30 +127,9 @@ class PacMan(object):
     def render(self):
         self.renderer.new_screen()
         self.renderer.draw_background()
-        # self.renderer.draw_grid_lines()
         self.renderer.render_grid(self.grid)
         self.renderer.draw_player()
-        self.renderer.draw_grame_info()
-            
-    def frame(self):
-        delta = self.clock.get_rawtime() / 1000
-        
-        self.time_last_move += delta
-        
-        self.showDotCount += 1
-        
-        if self.showDotCount >= self.showDotDelay:
-            self.showDotCount = 0
-            self.showDot = not self.showDot
-        
-        if self.time_last_move >= 1 / self.player_speed * self.player.speed:
-            self.player.move()
-            self.time_last_move = 0
-        
-        self.check_coin_collide()
-        
-        self.clock.tick(self.frame_rate)
-        
+        self.renderer.draw_grame_info()      
     
     def update(self):
         pygame.display.flip()
