@@ -12,7 +12,7 @@ class Player(object):
         self.game = game
         
         self.mouthOpen = 0
-        self.mouthChangeDelay = 3
+        self.mouthChangeDelay = 2
         self.mouthChangeCount = 0
         self.mouthOpenDir = True
                 
@@ -84,3 +84,8 @@ class Player(object):
         elif self.direction == 0:
             if self.canMove(self.y, math.floor(self.x - self.speed)) and self.y % 1.0 == 0:
                 self.x -= self.speed
+            else:
+                print(1 / ((pygame.time.get_ticks() / 1000) / (14 - self.x)))
+                print(pygame.time.get_ticks() / 1000)
+                
+                self.game.run = False
