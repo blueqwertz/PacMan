@@ -1,7 +1,7 @@
 import pygame
 
 from player import Player
-from enemy import Ghost
+from ghost import Ghost
 from render import RenderEngine
 
 class PacMan(object):
@@ -10,9 +10,7 @@ class PacMan(object):
         self.run = True
         
         self.clock = pygame.time.Clock()
-        
-        self.pause = False
-        
+            
         self.score = 0
         
         self.time_last_move = 0
@@ -37,8 +35,8 @@ class PacMan(object):
         self.pause = False
         
         self.lives = 3
-        
-        self.ghosts_frightened = False
+
+        self.ghost_mode = 0
 
         self.wait_frames = 0
 
@@ -48,7 +46,12 @@ class PacMan(object):
         
         
         self.player = Player(self)
-        self.enemies = [Ghost(0, self)]
+        self.enemies = [
+            Ghost(0, self),
+            Ghost(1, self),
+            Ghost(2, self),
+            Ghost(3, self)
+            ]
         
         self.renderer = RenderEngine(win, self, tyle_size, x_size, y_size)
     
@@ -85,7 +88,7 @@ class PacMan(object):
             self.time_last_move -= (1 / self.player_speed) * self.player.speed
         
         self.player.update_anim()
-        self.check_coin_collide()        
+        self.check_collision()        
         
     def game_over(self):
         self.renderer.text("GAME OVER", (200, 200))
@@ -112,6 +115,8 @@ class PacMan(object):
                     row_temp[i] = (Tyle("dot"))
                 elif letter == "E":
                     row_temp[i] = (Tyle("empty"))
+                elif letter == "G":
+                    row_temp[i] = ((Tyle("ghost_house")))
             temp.append(row_temp)
         return temp
     
@@ -139,22 +144,35 @@ class PacMan(object):
                     if event.key == key:
                         self.player.new_dir = i
     
-    def check_coin_collide(self):
+    def set_ghost_mode(self, mode):
+        for ghost in self.enemies:
+            ghost.mode = mode
+    
+    def check_collision(self):
         pos = (self.player.x, self.player.y)
         try:
-            if round(pos[0]) == pos[0] and round(pos[1]) == pos[1]:
-                if self.grid[int(pos[1])][int(pos[0])].type == "coin":
-                    self.grid[int(pos[1])][int(pos[0])] = Tyle("empty")
-                    self.score += 10
-                    self.wait_frames = 1
-                    self.dot_catched += 1
-                
-                if self.grid[int(pos[1])][int(pos[0])].type == "dot":
-                    self.grid[int(pos[1])][int(pos[0])] = Tyle("empty")
-                    self.ghosts_frightened = True
-                    self.wait_frames = 3
-        except:
+            if self.grid[round(pos[1])][round(pos[0])].type == "coin":
+                self.grid[round(pos[1])][round(pos[0])] = Tyle("empty")
+                self.score += 10
+                self.wait_frames = 1
+                self.dot_catched += 1
+            
+            if self.grid[round(pos[1])][round(pos[0])].type == "dot":
+                self.grid[round(pos[1])][round(pos[0])] = Tyle("empty")
+                self.set_ghost_mode(1)
+                self.wait_frames = 1
+        except IndexError:
             pass
+        
+        for ghost in self.enemies:
+            if self.player.x <= ghost.x <= self.player.x + 1 and self.player.y <= ghost.y <= self.player.y + 1:
+                if ghost.mode == 1:
+                    ghost.eaten = True
+                    ghost.safe_zone = True
+                else:
+                    self.dead = True
+        
+        
     
     def removeAllKeyPressed(self):
         for i in range(len(self.keys_pressed)):

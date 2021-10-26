@@ -138,11 +138,13 @@ class SpriteLoader(object):
             
         return img_list
 
-    def load_ghost_img_at(self, state):
-        color, animState, direction, frightened = state
+    def load_ghost_img_at(self, ghost):
+        color, animState, direction, mode = ghost.type, ghost.animState, ghost.direction, ghost.mode
         rotation_lookup = [1, 0, 2, 3]
         direction = rotation_lookup[direction]
-        if frightened:
+        if ghost.eaten:
+            return self.GhostImg[(8+direction, 1)]
+        if mode == 1:
             if color <= 1:
                 return self.GhostImg[(8+animState, 0)]
             else:
@@ -150,7 +152,7 @@ class SpriteLoader(object):
         else:
             return self.GhostImg[(direction*2 + animState, color)]
 
-    def load(self, Element, *args, Rotation=0, AnimCount=0, letter="", boardInd=0, ghostState=[0, 0, 0, False]):
+    def load(self, Element, *args, Rotation=0, AnimCount=0, letter="", boardInd=0, ghost=[0, 0, 0, False]):
         if Element.lower() == "pacman":
             return self.load_player_img_at(Rotation, AnimCount)
         elif Element.lower() == "letter":
@@ -161,5 +163,5 @@ class SpriteLoader(object):
         elif Element.lower() == "bg":
             return self.load_board_img_at(boardInd)
         elif Element.lower() == "ghost":
-            return self.load_ghost_img_at(ghostState)
+            return self.load_ghost_img_at(ghost)
         raise KeyError("unknown sprite type")

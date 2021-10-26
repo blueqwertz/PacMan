@@ -25,7 +25,6 @@ class RenderEngine(object):
             pygame.draw.line(self.win, (128, 128, 128), (0, j * self.block_size), (self.block_size * self.screen_size_x, j * self.block_size))
     
     def draw_player(self):
-        
         mouthOpen = self.player.mouthOpen
         rotation = self.player.direction
         
@@ -58,8 +57,7 @@ class RenderEngine(object):
     
     def draw_ghosts(self):
         for ghost in self.game.enemies:
-            img = pygame.transform.scale(self.SpriteLoader.load("Ghost", ghostState=[ghost.type, ghost.animState, ghost.direction, self.game.ghosts_frightened]), (self.block_size * 2, self.block_size * 2))
-            
+            img = pygame.transform.scale(self.SpriteLoader.load("Ghost", ghost=ghost), (self.block_size * 2, self.block_size * 2))
             self.win.blit(img, (ghost.x * self.block_size - img.get_width() / 4, ghost.y * self.block_size - img.get_height() / 4))
     
     def text(self, text, pos) -> None:
