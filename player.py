@@ -9,45 +9,40 @@ class Player(object):
         self.y = 26
         self.speed = 1/4
         
-        self.game = game
+        self.__game = game
         
         self.mouthOpen = 0
-        self.mouthChangeDelay = 2
-        self.mouthChangeCount = 0
-        self.mouthOpenDir = True
-                
-        self.animation_step = 0
-        self.animation_index = 1
-        
-        self.last_anim_frame = 0
+        self.__mouthChangeDelay = 2
+        self.__mouthChangeCount = 0
+        self.__mouthOpenDir = True
         
         self.direction = 0 # Left, Right, Up, Down
         self.new_dir = 0
         
     def canMove(self, row, col):
-        if col == -1 or col >= self.game.size[0]:
+        if col == -1 or col >= self.__game.size[0]:
             return True
-        if self.game.grid[int(row)][int(col)].type == "border":
+        if self.__game.grid[int(row)][int(col)].type == "border":
             return False
         return True
     
     def update_anim(self):
-        self.mouthChangeCount += 1
-        if self.mouthChangeCount >= self.mouthChangeDelay:
-            self.mouthChangeCount = 0
-            if self.mouthOpenDir:
+        self.__mouthChangeCount += 1
+        if self.__mouthChangeCount >= self.__mouthChangeDelay:
+            self.__mouthChangeCount = 0
+            if self.__mouthOpenDir:
                 self.mouthOpen += 1
             else:
                 self.mouthOpen -= 1
             
             if self.mouthOpen <= 0 or self.mouthOpen >= 3:
-                self.mouthOpenDir = not self.mouthOpenDir
+                self.__mouthOpenDir = not self.__mouthOpenDir
     
     def move(self):
              
         if self.x < 0:
-            self.x = self.game.size[0]
-        if self.x > self.game.size[0]:
+            self.x = self.__game.size[0]
+        if self.x > self.__game.size[0]:
             self.x = 0
         
         if self.new_dir == 2:
@@ -84,8 +79,8 @@ class Player(object):
         elif self.direction == 0:
             if self.canMove(self.y, math.floor(self.x - self.speed)) and self.y % 1.0 == 0:
                 self.x -= self.speed
-            else:
-                print(1 / ((pygame.time.get_ticks() / 1000) / (14 - self.x)))
-                print(pygame.time.get_ticks() / 1000)
+            # else:
+            #     print((14 - self.x) / (pygame.time.get_ticks() / 1000))
+            #     print(pygame.time.get_ticks() / 1000)
                 
-                self.game.run = False
+            #     self.game.run = False

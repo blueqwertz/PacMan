@@ -37,7 +37,7 @@ class RenderEngine(object):
         self.win.blit(self.bg, (0, 0))
         pass
     
-    def render_grid(self, grid):
+    def draw_grid(self, grid):
         for i, row in enumerate(grid):
             for j, tyle in enumerate(row):
                 if tyle.type == None:
@@ -55,6 +55,12 @@ class RenderEngine(object):
             
             img = pygame.transform.scale(self.SpriteLoader.load("PacMan", 1, 1), (self.block_size, self.block_size))
             self.win.blit(img, (i * img.get_width() + 20, (self.game.size[1] - 1.5) * self.block_size))
+    
+    def draw_ghosts(self):
+        for ghost in self.game.enemies:
+            img = pygame.transform.scale(self.SpriteLoader.load("Ghost", ghostState=[ghost.type, ghost.animState, ghost.direction, self.game.ghosts_frightened]), (self.block_size * 2, self.block_size * 2))
+            
+            self.win.blit(img, (ghost.x * self.block_size - img.get_width() / 4, ghost.y * self.block_size - img.get_height() / 4))
     
     def text(self, text, pos) -> None:
         text = str(text.lower())

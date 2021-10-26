@@ -1,7 +1,7 @@
 import pygame
 
 from player import Player
-from enemy import Enemy
+from enemy import Ghost
 from render import RenderEngine
 
 class PacMan(object):
@@ -18,10 +18,11 @@ class PacMan(object):
         self.time_last_move = 0
         self.frame_rate = 60
         
+        self.dot_full = 0
+        self.dot_catched = 0
 
         self.animation_steps = 4
         
-        self.enemies = []
         
         self.size = [x_size, y_size]
         
@@ -33,33 +34,62 @@ class PacMan(object):
         self.showDotCount = 0
         self.showDotDelay = 20
         
+        self.pause = False
+        
         self.lives = 3
         
-        self.player_speed = 15
         self.ghosts_frightened = False
 
+        self.wait_frames = 0
+
+        self.start_tick = 0
+        self.total_frames = 0
+        self.player_speed = 8
+        
+        
         self.player = Player(self)
+        self.enemies = [Ghost(0, self)]
         
         self.renderer = RenderEngine(win, self, tyle_size, x_size, y_size)
     
     def frame(self):
-        delta = self.clock.get_rawtime() / 1000
-                
+        if self.dot_full == self.dot_catched:
+            self.game_over()
+        
+        if self.pause:
+            return
+        
+        if self.wait_frames > 0:
+            self.wait_frames -= 1
+            return
+        
+        for ghost in self.enemies:
+            ghost.update()
+        
+        delta = self.clock.tick(self.frame_rate) / 1000
         self.time_last_move += delta
+        
+        self.total_frames += 1
         
         self.showDotCount += 1
         
         if self.showDotCount >= self.showDotDelay:
             self.showDotCount = 0
             self.showDot = not self.showDot
+            
         if self.time_last_move >= (1 / self.player_speed) * self.player.speed:
             self.player.move()
-            self.time_last_move %= (1 / self.player_speed) * self.player.speed
+            for ghost in self.enemies:
+                ghost.move()
+                # self.pause = True
+            self.time_last_move -= (1 / self.player_speed) * self.player.speed
         
         self.player.update_anim()
-        self.check_coin_collide()
+        self.check_coin_collide()        
         
-        self.clock.tick(self.frame_rate)
+    def game_over(self):
+        self.renderer.text("GAME OVER", (200, 200))
+        self.run = False
     
     def init_joystick(self):
         self.joystick = pygame.joystick.Joystick(0)
@@ -77,6 +107,7 @@ class PacMan(object):
                     row_temp[i] = (Tyle("border"))
                 elif letter == "C":
                     row_temp[i] = (Tyle("coin"))
+                    self.dot_full += 1
                 elif letter == "D":
                     row_temp[i] = (Tyle("dot"))
                 elif letter == "E":
@@ -101,6 +132,8 @@ class PacMan(object):
             
             if event.type == pygame.KEYDOWN:
                 movementKeys = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
+                
+                self.pause = False
 
                 for i, key in enumerate(movementKeys):
                     if event.key == key:
@@ -113,10 +146,13 @@ class PacMan(object):
                 if self.grid[int(pos[1])][int(pos[0])].type == "coin":
                     self.grid[int(pos[1])][int(pos[0])] = Tyle("empty")
                     self.score += 10
+                    self.wait_frames = 1
+                    self.dot_catched += 1
                 
                 if self.grid[int(pos[1])][int(pos[0])].type == "dot":
                     self.grid[int(pos[1])][int(pos[0])] = Tyle("empty")
                     self.ghosts_frightened = True
+                    self.wait_frames = 3
         except:
             pass
     
@@ -127,8 +163,10 @@ class PacMan(object):
     def render(self):
         self.renderer.new_screen()
         self.renderer.draw_background()
-        self.renderer.render_grid(self.grid)
+        self.renderer.draw_grid(self.grid)
         self.renderer.draw_player()
+        self.renderer.draw_ghosts()
+        # self.renderer.draw_grid_lines()
         self.renderer.draw_grame_info()      
     
     def update(self):
@@ -137,6 +175,6 @@ class PacMan(object):
 
 class Tyle(object):
     def __init__(self, tyle_type):
-        self.colors = {"border": (0, 0, 255), "coin": (242, 168, 132), "empty": (0, 0, 0), "dot": (242, 168, 132)}
+        self.colors = {"coin": (242, 168, 132), "empty": (0, 0, 0), "dot": (242, 168, 132)}
         self.type = tyle_type
-        self.color = self.colors[tyle_type]
+        self.color = self.colors.get(tyle_type, (0, 0, 0))

@@ -1,4 +1,5 @@
 import pygame
+import time
 from os import system, name, environ
 
 if name == 'nt':
@@ -31,7 +32,6 @@ pygame.display.set_caption("PacMan")
 
 def run(win):
     Game = PacMan(win, tiles_w, tiles_h, tile_size)
-
     try:
         while Game.run:
             Game.frame()
