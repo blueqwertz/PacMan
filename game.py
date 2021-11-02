@@ -1,11 +1,13 @@
+from os import terminal_size
 import pygame
+from pygame.constants import CONTROLLER_BUTTON_BACK
 
 from player import Player
 from ghost import Ghost
 from render import RenderEngine
 
 class PacMan(object):
-    def __init__(self, win, x_size, y_size, tyle_size):
+    def __init__(self, win, x_size, y_size, tyle_size, lives=3):
         self.win = win
         self.run = True
         
@@ -34,7 +36,7 @@ class PacMan(object):
         
         self.pause = False
         
-        self.lives = 3
+        self.lives = lives
 
         self.ghost_mode = 0
 
@@ -55,16 +57,29 @@ class PacMan(object):
         
         self.renderer = RenderEngine(win, self, tyle_size, x_size, y_size)
     
+    def new_game(self):
+        self.__init__(self.win, self.size[0], self.size[1], self.block_size, self.lives)
+    
     def frame(self):
-        if self.dot_full == self.dot_catched:
-            self.game_over()
-        
-        if self.pause:
-            return
-        
         if self.wait_frames > 0:
             self.wait_frames -= 1
+            self.clock.tick(self.frame_rate)
             return
+        
+        if self.player.dead:
+            self.enemies = []
+            self.player.update_anim()
+            if self.player.deadAnim >= 10:
+                self.renderer.draw_player()
+                pygame.time.delay(1000)
+                self.new_game()
+        
+        if self.pause:
+            self.clock.tick(self.frame_rate)
+            return
+        
+        if self.dot_full <= self.dot_catched:
+            self.game_over()
         
         for ghost in self.enemies:
             ghost.update()
@@ -84,15 +99,19 @@ class PacMan(object):
             self.player.move()
             for ghost in self.enemies:
                 ghost.move()
-                # self.pause = True
             self.time_last_move -= (1 / self.player_speed) * self.player.speed
         
         self.player.update_anim()
         self.check_collision()        
         
-    def game_over(self):
-        self.renderer.text("GAME OVER", (200, 200))
-        self.run = False
+    def game_over(self, Dead=False):
+        self.pause = True
+        self.player.dead = True
+        self.wait_frames = 60
+        if Dead:
+            self.lives -= 1
+        if self.lives < 0:
+            self.run = False
     
     def init_joystick(self):
         self.joystick = pygame.joystick.Joystick(0)
@@ -165,18 +184,15 @@ class PacMan(object):
             pass
         
         for ghost in self.enemies:
+            if ghost.eaten:
+                continue
             if self.player.x <= ghost.x <= self.player.x + 1 and self.player.y <= ghost.y <= self.player.y + 1:
                 if ghost.mode == 1:
                     ghost.eaten = True
                     ghost.safe_zone = True
+                    self.wait_frames = 30
                 else:
-                    self.dead = True
-        
-        
-    
-    def removeAllKeyPressed(self):
-        for i in range(len(self.keys_pressed)):
-            self.keys_pressed[i] = False
+                    self.game_over(Dead=True)
     
     def render(self):
         self.renderer.new_screen()
@@ -184,12 +200,11 @@ class PacMan(object):
         self.renderer.draw_grid(self.grid)
         self.renderer.draw_player()
         self.renderer.draw_ghosts()
-        # self.renderer.draw_grid_lines()
-        self.renderer.draw_grame_info()      
+        self.renderer.draw_grame_info()
     
     def update(self):
         pygame.display.flip()
-        
+    
 
 class Tyle(object):
     def __init__(self, tyle_type):

@@ -51,7 +51,6 @@ class Ghost(object):
         
     def move(self):
         if self.x % 1.0 == 0 and self.y % 1 == 0:
-
             try:
                 if self.game.grid[int(self.y)][int(self.x)].type == "ghost_house" and self.eaten:
                     self.eaten = False
@@ -63,6 +62,7 @@ class Ghost(object):
             dirPossible = [0, 1, 2, 3]
             
             if (not self.mode == 1) or self.eaten:
+                self.first_frighten = True
                 self.calcTarget()
                 dirPossible.remove((1 + 2 * (self.direction // 2)) - self.direction % 2)
             

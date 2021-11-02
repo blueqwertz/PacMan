@@ -28,7 +28,7 @@ class RenderEngine(object):
         mouthOpen = self.player.mouthOpen
         rotation = self.player.direction
         
-        img = pygame.transform.scale(self.SpriteLoader.load("PacMan", Rotation=rotation, AnimCount=mouthOpen), (self.block_size * 2, self.block_size * 2))
+        img = pygame.transform.scale(self.SpriteLoader.load("PacMan", Rotation=rotation, AnimCount=mouthOpen, PlayerDead=self.player.dead, PlayerDeadAnim=self.player.deadAnim), (self.block_size * 2, self.block_size * 2))
         
         self.win.blit(img, (self.player.x * self.block_size - img.get_width() / 4, self.player.y * self.block_size - img.get_height() / 4))
         

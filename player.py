@@ -11,6 +11,8 @@ class Player(object):
         
         self.__game = game
         
+        self.dead = False
+        
         self.mouthOpen = 0
         self.__mouthChangeDelay = 2
         self.__mouthChangeCount = 0
@@ -19,6 +21,25 @@ class Player(object):
         self.direction = 0 # Left, Right, Up, Down
         self.new_dir = 0
         
+        self.deadAnim = 0
+        self.__deadAnimCount = 0
+        self.__deadAnimDelay = 10
+    
+    def new_game(self):
+        print("new game")
+        self.x = 14
+        self.y = 26
+        
+        self.dead = False
+        
+        self.mouthOpen = 0
+        self.deadAnim = 0
+        
+        self.direction = 0 # Left, Right, Up, Down
+        self.new_dir = 0
+        
+    
+    
     def canMove(self, row, col):
         if col == -1 or col >= self.__game.size[0]:
             return True
@@ -27,6 +48,12 @@ class Player(object):
         return True
     
     def update_anim(self):
+        if self.dead:
+            self.__deadAnimCount += 1
+            if self.__deadAnimCount >= self.__deadAnimDelay:
+                self.__deadAnimCount = 0
+                self.deadAnim += 1
+            return
         self.__mouthChangeCount += 1
         if self.__mouthChangeCount >= self.__mouthChangeDelay:
             self.__mouthChangeCount = 0

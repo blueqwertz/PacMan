@@ -1,6 +1,5 @@
 import pygame
 
-
 class SpriteLoader(object):
     def __init__(self):
         
@@ -31,7 +30,7 @@ class SpriteLoader(object):
         img_list = {}
 
         pos = [
-                (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0), (8, 0), (9, 0), (10, 0), (11, 0), (12, 0), (13, 0),
+                (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0), (8, 0), (9, 0), (10, 0), (11, 0), (12, 0), (13, 0), (14, 0),
                 (0, 1), (1, 1),
                 (0, 2), (1, 2),
                 (0, 3), (1, 3)
@@ -46,7 +45,9 @@ class SpriteLoader(object):
             
         return img_list
 
-    def load_player_img_at(self, rot, animc):
+    def load_player_img_at(self, rot, animc, dead, deadAnim):
+        if dead:
+            return self.PlayerImg[(4 + deadAnim, 0)]
         if animc >= 2:
             return self.PlayerImg[(2, 0)]
         rotation_lookup = [1, 0, 2, 3]
@@ -152,9 +153,9 @@ class SpriteLoader(object):
         else:
             return self.GhostImg[(direction*2 + animState, color)]
 
-    def load(self, Element, *args, Rotation=0, AnimCount=0, letter="", boardInd=0, ghost=[0, 0, 0, False]):
+    def load(self, Element, *args, Rotation=0, AnimCount=0, letter="", boardInd=0, ghost=[0, 0, 0, False], PlayerDead=False, PlayerDeadAnim=0):
         if Element.lower() == "pacman":
-            return self.load_player_img_at(Rotation, AnimCount)
+            return self.load_player_img_at(Rotation, AnimCount, PlayerDead, PlayerDeadAnim)
         elif Element.lower() == "letter":
             if letter == "":
                 return False
