@@ -7,16 +7,14 @@ if name == 'nt':
 else:
     _ = system('clear')
 
-from game import PacMan
+from game import PacMan, Tyle
 
 pygame.init()
 
-tiles_w = 28
-tiles_h = 36
 tile_size = 20
 
-screen_w = tiles_w * tile_size
-screen_h = tiles_h * tile_size
+screen_w = 28 * tile_size
+screen_h = 36 * tile_size
 
 
 windowX = 0
@@ -31,7 +29,7 @@ pygame.display.set_caption("PacMan")
     
 
 def run(win):
-    Game = PacMan(win, tiles_w, tiles_h, tile_size)
+    Game = PacMan(win, tyle_size=20)
     try:
         while Game.run:
             Game.frame()

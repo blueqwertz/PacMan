@@ -3,12 +3,11 @@ from pygame.sprite import Sprite
 from sprite_loader import SpriteLoader
 
 class RenderEngine(object):
-    def __init__(self, win, game, block_size, x_size, y_size):
+    def __init__(self, win, game, block_size, size):
         self.win = win
         self.game = game
         self.player = game.player
-        self.screen_size_x = x_size
-        self.screen_size_y = y_size
+        self.screen_size_x, self.screen_size_y = size
         self.block_size = block_size
         
         self.SpriteLoader = SpriteLoader()
@@ -49,7 +48,9 @@ class RenderEngine(object):
                     pygame.draw.circle(self.win, tyle.color, (j * self.block_size + self.block_size // 2, i * self.block_size + self.block_size // 2), self.block_size // 2)
     
     def draw_grame_info(self):
-        self.text("HIGH SCORE", (190, 5))
+        self.text("HIGH SCORE", (190, 0))
+        self.text(self.game.score, (80, 21))
+        self.text(self.game.highscore, (270, 21))
         for i in range(self.game.lives):
             
             img = pygame.transform.scale(self.SpriteLoader.load("PacMan", 1, 1), (self.block_size, self.block_size))
@@ -61,7 +62,7 @@ class RenderEngine(object):
             self.win.blit(img, (ghost.x * self.block_size - img.get_width() / 4, ghost.y * self.block_size - img.get_height() / 4))
     
     def text(self, text, pos) -> None:
-        text = str(text.lower())
+        text = str(text).lower()
             
         # if not color in ["white", "red", "pink", "blue", "yellow"]:
         #     raise NameError("color not supported")
@@ -73,7 +74,7 @@ class RenderEngine(object):
             letterInd = ord(letter) - 97
             if letterInd >= 15:
                 letterInd += 1
-            img = pygame.transform.scale(self.SpriteLoader.load("Letter", letter=letter), (self.block_size, self.block_size))
+            img = pygame.transform.scale(self.SpriteLoader.load("Letter", letter=letter), (19, 19))
             self.win.blit(img, (curX, pos[1]))
             curX += img.get_width() + 3
             

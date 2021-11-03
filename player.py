@@ -23,22 +23,7 @@ class Player(object):
         
         self.deadAnim = 0
         self.__deadAnimCount = 0
-        self.__deadAnimDelay = 10
-    
-    def new_game(self):
-        print("new game")
-        self.x = 14
-        self.y = 26
-        
-        self.dead = False
-        
-        self.mouthOpen = 0
-        self.deadAnim = 0
-        
-        self.direction = 0 # Left, Right, Up, Down
-        self.new_dir = 0
-        
-    
+        self.__deadAnimDelay = 5
     
     def canMove(self, row, col):
         if col == -1 or col >= self.__game.size[0]:
@@ -106,8 +91,3 @@ class Player(object):
         elif self.direction == 0:
             if self.canMove(self.y, math.floor(self.x - self.speed)) and self.y % 1.0 == 0:
                 self.x -= self.speed
-            # else:
-            #     print((14 - self.x) / (pygame.time.get_ticks() / 1000))
-            #     print(pygame.time.get_ticks() / 1000)
-                
-            #     self.game.run = False
