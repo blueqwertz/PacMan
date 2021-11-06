@@ -58,10 +58,11 @@ class RenderEngine(object):
     
     def draw_ghosts(self):
         for ghost in self.game.enemies:
+            # pygame.draw.line(self.win, (255, 255, 255), (ghost.x * self.block_size, ghost.y * self.block_size), (ghost.target[0] * self.block_size, ghost.target[1] * self.block_size))
             img = pygame.transform.scale(self.SpriteLoader.load("Ghost", ghost=ghost), (self.block_size * 2, self.block_size * 2))
             self.win.blit(img, (ghost.x * self.block_size - img.get_width() / 4, ghost.y * self.block_size - img.get_height() / 4))
     
-    def text(self, text, pos) -> None:
+    def text(self, text, pos):
         text = str(text).lower()
             
         # if not color in ["white", "red", "pink", "blue", "yellow"]:

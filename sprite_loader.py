@@ -47,7 +47,9 @@ class SpriteLoader(object):
 
     def load_player_img_at(self, rot, animc, dead, deadAnim):
         if dead:
-            return self.PlayerImg[(4 + deadAnim, 0)]
+            img = self.PlayerImg[(3 + deadAnim, 0)]
+            img = pygame.transform.rotate(img, [90, -90, 0, 180][rot])
+            return img
         if animc >= 2:
             return self.PlayerImg[(2, 0)]
         rotation_lookup = [1, 0, 2, 3]

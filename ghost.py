@@ -12,7 +12,7 @@ class Ghost(object):
         self.__animDelay = 10
         self.__animCount = 0
         
-        self.speed = game.player.speed
+        self.speed = 0.25
         self.direction = 2 # Left, Right, Up, Down
         self.__player = self.game.player
         self.target = (self.__player.x, self.__player.y)
@@ -20,7 +20,7 @@ class Ghost(object):
         self.eaten = False
         
         self.__scatter_target = [(25, -1), (2, -1), (27, 34), (0, 34)]
-        
+                
         self.mode = 0 # scatter, frightened, chase
         
         self.first_frighten = True
@@ -177,15 +177,17 @@ class Ghost(object):
                 elif player.direction == 1:
                     self.target = (player.x + 4, player.y)
                 elif player.direction == 2:
-                    self.target = (player.x + 4, player.y - 4)
+                    self.target = (player.x - 4, player.y - 4)
                 elif player.direction == 3:
                     self.target = (player.x, player.y + 4)
             elif self.type == 2:
                 dirVectors = [(-1, 0), (1, 0), (-1, -1), (0, 1)]
-                temp_tyle = (self.__player.x + dirVectors[self.__player.direction][0] * 2, self.__player.y + dirVectors[self.__player.direction][1] * 2)
-                blinky_tyle = (self.game.enemies[0].x, self.game.enemies[0].y)
-                vector = tuple(map(lambda i, j: i - j, temp_tyle, blinky_tyle))
-                self.target = tuple(map(lambda i, j: i + j, vector, temp_tyle))
+                # temp_tyle = (self.__player.x + dirVectors[self.__player.direction][0] * 2, self.__player.y + dirVectors[self.__player.direction][1] * 2)
+                # blinky_tyle = (self.game.enemies[0].x, self.game.enemies[0].y)
+                # vector = 
+                pl_x, pl_y = self.__player.x + dirVectors[self.__player.direction][0] * 2, self.__player.y + dirVectors[self.__player.direction][1] * 2
+                blinky_x, blinky_y = self.game.enemies[0].x, self.game.enemies[0].y
+                self.target = (pl_x - (blinky_x - pl_x), pl_y - (blinky_y - pl_y))
             elif self.type == 3:
                 x1 = self.__player.x
                 x2 = self.x
@@ -193,6 +195,6 @@ class Ghost(object):
                 y2 = self.y
                 dist = math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
                 if dist <= 8:
-                    self.target == self.__scatter_target[3]
+                    self.target = self.__scatter_target[3]
                 else:
                     self.target = (x1, y1)

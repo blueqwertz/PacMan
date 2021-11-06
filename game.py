@@ -1,6 +1,7 @@
 from os import terminal_size
 import pygame
-from pygame.constants import CONTROLLER_BUTTON_BACK
+from pygame import time
+from pygame.constants import CONTROLLER_BUTTON_BACK, NOEVENT
 
 from player import Player
 from ghost import Ghost
@@ -17,6 +18,7 @@ class PacMan(object):
         self.highscore = int(open("highscore.txt", "r").read())
                 
         self.time_last_move = 0
+        self.time_last_ghost_move = 0
         self.frame_rate = 60
         
         self.dot_full = 0
@@ -39,15 +41,19 @@ class PacMan(object):
         self.lives = lives
 
         self.ghost_mode = 0
+        self.ghost_mode_time = [[0, 0], [7, 2], [27, 0], [34, 2], [54, 0], [59, 2], [64, 0]]
+        self.frightened_mode_frames = 0
+        self.ghost_eat_points = 200
 
         self.wait_frames = 0
 
         self.start_tick = 0
         self.total_frames = 0
         self.player_speed = 8
-        
+        self.ghost_speed = 8
         
         self.player = Player(self)
+        self.player_dead = False
         self.enemies = [Ghost(x, self) for x in range(4)]
         
         self.renderer = RenderEngine(win, self, tyle_size, self.size)
@@ -62,10 +68,11 @@ class PacMan(object):
             self.clock.tick(self.frame_rate)
             return
         
-        if self.player.dead:
+        if self.player_dead:
             self.enemies = []
             self.player.update_anim()
-            if self.player.deadAnim >= 10:
+            self.player.dead = True
+            if self.player.deadAnim >= 11:
                 self.renderer.draw_player()
                 pygame.time.delay(500)
                 if self.lives <= 0:
@@ -86,6 +93,11 @@ class PacMan(object):
         
         delta = self.clock.tick(self.frame_rate) / 1000
         self.time_last_move += delta
+        self.time_last_ghost_move += delta
+        
+        self.update_ghost_mode()
+        self.frightened_mode_frames += 1
+        # print(self.ghost_mode)
         
         self.total_frames += 1
         
@@ -97,9 +109,13 @@ class PacMan(object):
             
         if self.time_last_move >= (1 / self.player_speed) * self.player.speed:
             self.player.move()
-            for ghost in self.enemies:
-                ghost.move()
             self.time_last_move -= (1 / self.player_speed) * self.player.speed
+        
+        
+        if self.time_last_ghost_move >= (1 / self.ghost_speed) * self.enemies[0].speed:
+            for ghost in self.enemies:
+                    ghost.move()
+            self.time_last_ghost_move -= (1 / self.ghost_speed) * self.enemies[0].speed
         
         self.player.update_anim()
         self.check_collision()        
@@ -107,7 +123,7 @@ class PacMan(object):
     def game_over(self):
         self.pause = True
         self.wait_frames = 30
-        self.player.dead = True
+        self.player_dead = True
         self.lives -= 1
     
     def init_joystick(self):
@@ -152,6 +168,10 @@ class PacMan(object):
                 pygame.quit()
                 return
             
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.pause = not self.pause
+            
             if not self.pause:
                 if event.type == pygame.KEYDOWN:
                     movementKeys = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
@@ -163,8 +183,23 @@ class PacMan(object):
                             self.player.new_dir = i
     
     def set_ghost_mode(self, mode):
+        self.ghost_mode = mode
         for ghost in self.enemies:
-            ghost.mode = mode
+            if not ghost.mode == 1:
+                ghost.mode = mode
+            if self.frightened_mode_frames > 5 * 60:
+                self.ghost_eat_points = 200
+                ghost.mode = mode
+    
+    def update_ghost_mode(self):
+        time_seconds = self.total_frames / 60
+        mode = 0
+        for el in self.ghost_mode_time:
+            if time_seconds >= el[0]:
+                mode = el[1]
+        if mode == None:
+            mode = 2
+        self.set_ghost_mode(mode)
     
     def check_collision(self):
         pos = (self.player.x, self.player.y)
@@ -179,6 +214,7 @@ class PacMan(object):
                 self.grid[round(pos[1])][round(pos[0])] = Tyle("empty")
                 self.set_ghost_mode(1)
                 self.wait_frames = 3
+                self.frightened_mode_frames = 0
         except IndexError:
             pass
         
@@ -190,6 +226,8 @@ class PacMan(object):
                     ghost.eaten = True
                     ghost.safe_zone = True
                     self.wait_frames = 30
+                    self.score += self.ghost_eat_points
+                    self.ghost_eat_points += 200
                 else:
                     self.game_over()
     
