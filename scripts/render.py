@@ -1,6 +1,6 @@
 import pygame
 from pygame.sprite import Sprite
-from sprite_loader import SpriteLoader
+from scripts.sprite_loader import SpriteLoader
 
 class RenderEngine(object):
     def __init__(self, win, game, block_size, size):

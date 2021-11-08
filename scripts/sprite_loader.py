@@ -9,8 +9,26 @@ class SpriteLoader(object):
         self.GhostImg = self.load_ghost_img()
         self.Boards = self.load_board_img()
         self.Letters = self.load_letter_img()
+        self.TitleImg = self.load_title_img()
         # self.Numbers = self.load_number_img()
     
+    def load_title_img(self):
+        startX = 0
+        startY = 253
+        offsetL = 0
+        offsetR = 0
+        offsetT = 0
+        offsetB = 0
+        width, height = 185, 50
+    
+        
+        rect = pygame.Rect(startX, startY, width, height)
+        image = pygame.Surface(rect.size).convert()
+        image.blit(self.sprite_img, (0, 0), rect)
+        image.set_colorkey((0, 0, 0))
+        
+        return image
+        
     def load_player_img(self):
         # rect = pygame.Rect(rectangle)
         # image = pygame.Surface(rect.size).convert()

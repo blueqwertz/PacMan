@@ -1,11 +1,8 @@
-from os import terminal_size
 import pygame
-from pygame import time
-from pygame.constants import CONTROLLER_BUTTON_BACK, NOEVENT
 
-from player import Player
-from ghost import Ghost
-from render import RenderEngine
+from scripts.player import Player
+from scripts.ghost import Ghost
+from scripts.render import RenderEngine
 
 class PacMan(object):
     def __init__(self, win, tyle_size, lives=3, score=0):
@@ -57,6 +54,29 @@ class PacMan(object):
         self.enemies = [Ghost(x, self) for x in range(4)]
         
         self.renderer = RenderEngine(win, self, tyle_size, self.size)
+    
+    def homescreen(self):
+        run = True
+        highscore = int(open("highscore.txt", "r").read())
+        title = self.renderer.SpriteLoader.TitleImg
+        try:
+            while run:
+                title = pygame.transform.scale(title, (int(self.size[0] * self.block_size - 150), int((self.size[0] * self.block_size - 150) / title.get_width() * title.get_height())))
+                self.win.blit(title, (self.size[0] * self.block_size / 2 - title.get_width() / 2, 200))
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        self.run = False
+                        pygame.quit()
+                        return
+                    if event.type == pygame.KEYDOWN:
+                        run = False
+                    
+                self.clock.tick(self.frame_rate)
+                pygame.display.flip()
+                
+        except KeyboardInterrupt:
+            self.run = False
+            print("byebye")
     
     def store_highscore(self):
         if self.score > self.highscore:
@@ -111,12 +131,13 @@ class PacMan(object):
             self.player.move()
             self.time_last_move -= (1 / self.player_speed) * self.player.speed
         
-        
-        if self.time_last_ghost_move >= (1 / self.ghost_speed) * self.enemies[0].speed:
-            for ghost in self.enemies:
-                    ghost.move()
-            self.time_last_ghost_move -= (1 / self.ghost_speed) * self.enemies[0].speed
-        
+        try:
+            if self.time_last_ghost_move >= (1 / self.ghost_speed) * self.enemies[0].speed:
+                for ghost in self.enemies:
+                        ghost.move()
+                self.time_last_ghost_move -= (1 / self.ghost_speed) * self.enemies[0].speed
+        except IndexError:
+            pass
         self.player.update_anim()
         self.check_collision()        
         
