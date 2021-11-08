@@ -61,8 +61,8 @@ class PacMan(object):
         title = self.renderer.SpriteLoader.TitleImg
         try:
             while run:
-                title = pygame.transform.scale(title, (int(self.size[0] * self.block_size - 150), int((self.size[0] * self.block_size - 150) / title.get_width() * title.get_height())))
-                self.win.blit(title, (self.size[0] * self.block_size / 2 - title.get_width() / 2, 200))
+                title = pygame.transform.scale(title, (int(self.size[0] * self.block_size - 100), int((self.size[0] * self.block_size - 100) / title.get_width() * title.get_height())))
+                self.win.blit(title, (self.size[0] * self.block_size / 2 - title.get_width() / 2, 150))
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         self.run = False
