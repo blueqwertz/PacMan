@@ -160,15 +160,19 @@ class SpriteLoader(object):
         return img_list
 
     def load_ghost_img_at(self, ghost):
-        color, animState, direction, mode = ghost.type, ghost.animState, ghost.direction, ghost.mode
+        color, animState, direction, mode, flicker = ghost.type, ghost.animState, ghost.direction, ghost.mode, ghost.flicker_state
         rotation_lookup = [1, 0, 2, 3]
         direction = rotation_lookup[direction]
         if ghost.eaten:
             return self.GhostImg[(8+direction, 1)]
         if mode == 1:
             if color <= 1:
+                if flicker:
+                    return self.GhostImg[(10+animState, 0)]
                 return self.GhostImg[(8+animState, 0)]
             else:
+                if flicker:
+                    return self.GhostImg[(8+animState, 0)]
                 return self.GhostImg[(10+animState, 0)]
         else:
             return self.GhostImg[(direction*2 + animState, color)]

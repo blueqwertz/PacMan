@@ -5,7 +5,7 @@ from scripts.ghost import Ghost
 from scripts.render import RenderEngine
 
 class PacMan(object):
-    def __init__(self, win, tyle_size, lives=3, score=0):
+    def __init__(self, win, tyle_size, lives=3, score=0, grid=None):
         self.win = win
         self.run = True
         
@@ -26,6 +26,11 @@ class PacMan(object):
         self.size = [28, 36]
         
         self.grid = self.load_map()
+        if grid:
+            for i, row in enumerate(grid):
+                for j, tyle in enumerate(row):
+                    if tyle.type == "empty":
+                        self.grid[i][j] = Tyle("empty")
         
         self.block_size = tyle_size
         
@@ -99,7 +104,7 @@ class PacMan(object):
                     self.run = False
                     self.store_highscore()
                     return
-                self.__init__(self.win, self.block_size, lives=self.lives, score=self.score)
+                self.__init__(self.win, self.block_size, lives=self.lives, score=self.score, grid=self.grid)
         
         if self.pause:
             self.clock.tick(self.frame_rate)
@@ -211,6 +216,12 @@ class PacMan(object):
             if self.frightened_mode_frames > 5 * 60:
                 self.ghost_eat_points = 200
                 ghost.mode = mode
+                ghost.flicker = False
+            elif self.frightened_mode_frames > 3.5 * 60:
+                ghost.flicker = True
+                # print(ghost.flicker_state)
+            else:
+                ghost.flicker = False
     
     def update_ghost_mode(self):
         time_seconds = self.total_frames / 60

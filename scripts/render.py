@@ -62,7 +62,7 @@ class RenderEngine(object):
             img = pygame.transform.scale(self.SpriteLoader.load("Ghost", ghost=ghost), (self.block_size * 2, self.block_size * 2))
             self.win.blit(img, (ghost.x * self.block_size - img.get_width() / 4, ghost.y * self.block_size - img.get_height() / 4))
     
-    def text(self, text, pos):
+    def text(self, text, pos, size=19):
         text = str(text).lower()
             
         # if not color in ["white", "red", "pink", "blue", "yellow"]:
@@ -75,7 +75,7 @@ class RenderEngine(object):
             letterInd = ord(letter) - 97
             if letterInd >= 15:
                 letterInd += 1
-            img = pygame.transform.scale(self.SpriteLoader.load("Letter", letter=letter), (19, 19))
+            img = pygame.transform.scale(self.SpriteLoader.load("Letter", letter=letter), (size, size))
             self.win.blit(img, (curX, pos[1]))
             curX += img.get_width() + 3
             

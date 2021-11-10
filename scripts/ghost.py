@@ -19,6 +19,11 @@ class Ghost(object):
         
         self.eaten = False
         
+        self.flicker = False
+        self.flicker_state = False
+        self.flickerCount = 0
+        self.flickerDelay = 8
+        
         self.__scatter_target = [(25, -1), (2, -1), (27, 34), (0, 34)]
                 
         self.mode = 0 # scatter, frightened, chase
@@ -44,6 +49,12 @@ class Ghost(object):
     
     def update(self):
         self.__animCount += 1
+        
+        if self.flicker:
+            self.flickerCount += 1
+            if self.flickerCount >= self.flickerDelay:
+                self.flicker_state = not self.flicker_state
+                self.flickerCount = 0
         
         if self.__animCount >= self.__animDelay:
             self.animState = 1 - self.animState
